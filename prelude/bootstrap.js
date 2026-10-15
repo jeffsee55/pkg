@@ -594,7 +594,10 @@ function payloadFileSync(pointer) {
   });
   function deflateSync(snapshotFilename) {
     if (!tmpFolder) {
-      tmpFolder = fs.mkdtempSync(path.join(homedir(), '.pkg-cache', 'tmp-'));
+      const cacheDir = REQUIRE_SHARED.pkgCacheDir();
+      // mkdtemp does not create parents, and the cache may not exist yet.
+      fs.mkdirSync(cacheDir, { recursive: true });
+      tmpFolder = fs.mkdtempSync(path.join(cacheDir, 'tmp-'));
     }
     const content = fs.readFileSync(snapshotFilename, { encoding: 'binary' });
     // content is already unzipped !
